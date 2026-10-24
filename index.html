@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aretia · Apps</title>
+<link rel="icon" href="opx/icons/icon-192.png">
+<style>
+:root{--bg:#f3f3f2;--surface:#fff;--fg:#111110;--muted:#5b5b58;--line:#d9d9d6;--ar:#b83a18}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1716;--surface:#172220;--fg:#e8eeec;--muted:#9fb0ad;--line:#2b3a37;--ar:#e8693f}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.45}
+header{background:#111110;color:#fff;padding:18px max(16px,env(safe-area-inset-left))}
+.in{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.wm{font-weight:700;letter-spacing:.08em;font-size:20px}
+.flag{display:flex;gap:3px}.flag i{display:block;width:16px;height:6px}.flag i:nth-child(1){background:#009739}.flag i:nth-child(2){background:#fedd00}.flag i:nth-child(3){background:#012169}
+main{max-width:960px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:22px;margin:0 0 6px}p.sub{margin:0 0 20px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+a.card{display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;color:inherit;text-decoration:none;border-top:4px solid var(--ar)}
+a.card:hover{border-color:var(--ar)}
+a.card b{display:block;font-size:17px;margin-bottom:4px}a.card span{color:var(--muted);font-size:13px}
+a.card small{display:block;margin-top:10px;font-family:ui-monospace,monospace;font-size:11px;color:var(--ar)}
+.ext{border-top-color:var(--muted)}
+footer{max-width:960px;margin:0 auto;padding:0 16px 24px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header><div class="in"><svg viewBox="0 0 100 100" width="34" height="34" aria-hidden="true"><path d="M12 92 L50 10 L88 92" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="66" r="9" fill="#B83A18"/></svg><span class="wm">ARETIA</span><span class="flag"><i></i><i></i><i></i></span></div></header>
+<main>
+<h1>Apps Aretia</h1>
+<p class="sub">Ferramentas de diagnóstico e gestão Lean + IA. Acesso por PIN; dados na base online compartilhada.</p>
+<div class="grid">
+  <a class="card" href="opx/"><b>OPX Scan</b><span>Maturidade em Excelência Operacional: 11 pilares, 33 perguntas, histórico e radar.</span><small>cliente: Imtab</small></a>
+  <a class="card ext" href="https://kafkia.github.io/aretia-5s/"><b>5S</b><span>Auditorias 5S com fotos e plano de ação.</span><small>repositório próprio</small></a>
+  <a class="card ext" href="https://kafkia.github.io/app-kanban/"><b>Kanban</b><span>Gestão de estoque e ordens por cartão.</span><small>repositório próprio</small></a>
+  <a class="card ext" href="https://kafkia.github.io/app-coaching/"><b>Coaching Estruturado</b><span>Rotinas de coaching e fóruns de gestão.</span><small>repositório próprio</small></a>
+</div>
+</main>
+<footer>Aretia · Confidencial. Cada app usa um prefixo próprio na base; a camada comum (ar_) registra clientes, apps e eventos para integração.</footer>
+</body>
+</html>

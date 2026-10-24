@@ -1,0 +1,35 @@
+OPX SCAN – Aretia · Maturidade em Excelência Operacional – Rev01 (base online + PIN)
+
+Cliente desta instalação: Imtab Geradores de Calor.
+Link (GitHub Pages): https://kafkia.github.io/aretia-apps/opx/
+
+ATIVAR (uma vez só)
+1) GitHub > Settings > General > tornar o repositório Público (o Pages gratuito exige repositório público).
+2) GitHub > Settings > Pages > Build and deployment: Branch main / (root) > Save. Aguarde 1 a 2 min.
+3) Abra o link, clique em "Primeira instalação", informe o código de instalação (enviado no chat), seu nome e um PIN de 6 a 12 dígitos.
+   Você vira administrador. O código deixa de valer depois disso.
+4) Para incluir outras pessoas: por enquanto só pelo SQL Editor do Supabase:
+   select ox_usuario_salvar('<seu PIN>', 'Nome da pessoa', '<PIN dela>', 'equipe');
+
+USO
+- Clique no nível de cada pergunta (1 a 5). Evidência pré-preenchida com "dado:" vem dos arquivos recebidos antes da visita.
+- "Salvar no histórico" grava a avaliação na base online com data, rótulo e avaliador. Sem internet, guarda no aparelho e envia quando voltar.
+- "Comparar" sobrepõe uma avaliação salva no radar (antes x depois). "Abrir" traz as notas de volta para edição.
+- "Copiar CSV" exporta para a planilha de apoio. Não suba dados de cliente no GitHub.
+- "Sair" apaga o PIN do aparelho (os dados ficam na base online).
+
+INSTALAR COMO APP
+Android (Chrome): menu > Instalar app. iPhone (Safari): Compartilhar > Adicionar à Tela de Início. Notebook: ícone de instalar na barra de endereço.
+
+BASE DE DADOS (Supabase, projeto app-5S, compartilhado pelos apps Aretia)
+- Camada comum ar_: ar_clientes (imtab, aemco), ar_apps (opx, 5s, kanban, coaching), ar_eventos (registro de eventos de todos os apps).
+- Prefixo deste app: ox_ (ox_avaliacoes, ox_usuarios, ox_config, ox_falhas) e funções ox_login, ox_instalar, ox_pull, ox_push, ox_usuario_salvar, ox_usuarios_listar.
+- Acesso às tabelas é bloqueado (RLS); só as funções com PIN leem e gravam. 10 PINs errados em 15 min bloqueiam o acesso.
+- Script completo: supabase/opx_scan.sql.
+
+REGRA PARA OS PRÓXIMOS APPS ARETIA
+1) Mesmo projeto Supabase; prefixo próprio por app (duas letras + _).
+2) Registrar o app em ar_apps e o cliente em ar_clientes; toda gravação chama ar_evento(app, cliente, tipo, ref, resumo, dados, por).
+3) Tabelas sempre com RLS e sem acesso direto; leitura e escrita só por funções security definer com PIN (padrão ox_auth).
+4) Linhas com id text (gerado no app), campo atualizado e apagado (exclusão lógica), para sincronizar por data.
+5) App estático em um repositório próprio no GitHub Pages, arquivo único index.html + manifest + sw.js + icons.
