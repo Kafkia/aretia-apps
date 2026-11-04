@@ -5,6 +5,7 @@ Repositório único dos apps estáticos da Aretia, publicados no GitHub Pages: h
 | Pasta | App | Base (Supabase, projeto app-5S) |
 |---|---|---|
 | `opx/` | OPX Scan (maturidade em excelência operacional) | prefixo `ox_` |
+| `snapshot/` | Snapshot (perfil de perdas por área) | prefixo `sn_` |
 
 Camada comum da base: `ar_clientes`, `ar_apps`, `ar_eventos` (ver `opx/LEIA-ME.txt`, seção "Regra para os próximos apps").
 
