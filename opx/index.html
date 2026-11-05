@@ -221,7 +221,7 @@ const css=v=>getComputedStyle(document.documentElement).getPropertyValue('--'+v)
 function renderLogo(){const img=$('#logoImg');img.onerror=()=>{$('#logoBox').innerHTML='<span class="cwm">IMTAB</span>';};}
 function renderGrid(){const t=$('#grid');let h='<thead><tr><th>Pilar</th><th>#</th><th>Pergunta</th>'+LV.map((l,i)=>`<th class="lv lv${i}">${l}<br>${i}</th>`).join('')+'<th>Evidência</th></tr></thead><tbody>';
   PIL.forEach((p,pi)=>p.q.forEach((q,qi)=>{const k=p.id+qi;const a=S.ans[k];
-    h+=`<tr>${qi===0?`<td class="pil" rowspan="3" style="--pc:${p.cor}">${p.nome}<small>${p.mod}</small></td>`:''}<td class="q">${pi+1}.${qi+1}</td><td>${q[0]}</td>`+
+    h+=`<tr>${qi===0?`<td class="pil" rowspan="${p.q.length}" style="--pc:${p.cor}">${p.nome}<small>${p.mod}</small></td>`:''}<td class="q">${pi+1}.${qi+1}</td><td>${q[0]}</td>`+
       [0,1,2,3,4,5].map(l=>`<td class="c"><button data-k="${k}" data-l="${l}" class="${a===l?'on l'+l:''}" aria-label="${LV[l]}"></button></td>`).join('')+
       `<td class="ev"><input data-ev="${k}" value="${(S.ev[k]||'').replace(/"/g,'&quot;')}"></td></tr>`;}));
   t.innerHTML=h+'</tbody>';
