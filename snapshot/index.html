@@ -207,16 +207,24 @@ textarea{width:100%;min-height:120px;font-family:var(--mono);font-size:12px}
 (function(){
 'use strict';
 const KEY='snapshot_imtab_v2'; const OLDKEY='snapshot_imtab_v1';
-const SB={url:'https://swrbiwtoupytmfhdaiaw.supabase.co',key:'sb_publishable_7Tw5LvcV_doHpQVvLVgwvA_l0C7W3dD'}; const CLIENTE='imtab'; const CODIGO='IMTAB-SNAP-2026';
+const SB={url:'https://swrbiwtoupytmfhdaiaw.supabase.co',key:'sb_publishable_7Tw5LvcV_doHpQVvLVgwvA_l0C7W3dD'}; const CLIENTE='imtab'; const APPID='snapshot';
+let CODIGO=null;const CODKEY='aretia_codigo_'+APPID;try{CODIGO=localStorage.getItem(CODKEY);}catch(e){}
+function pedirCodigo(msg){return new Promise(res=>{const o=document.createElement('div');o.id='codGate';o.setAttribute('style','position:fixed;inset:0;background:rgba(17,17,16,.72);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:inherit');
+o.innerHTML='<form style="background:#fff;border-radius:14px;max-width:360px;width:100%;padding:22px 20px 18px;box-shadow:0 10px 40px rgba(0,0,0,.3)"><div style="display:flex;height:4px;border-radius:2px;overflow:hidden;margin-bottom:14px"><span style="flex:3;background:#009739"></span><span style="flex:2;background:#FEDD00"></span><span style="flex:1;background:#012169"></span></div><div style="font-weight:700;font-size:17px;color:#111110;margin-bottom:6px">Código de acesso</div><div id="codMsg" style="font-size:13px;color:#5b5b58;margin-bottom:12px"></div><input id="codIn" type="password" autocomplete="off" autocapitalize="characters" style="width:100%;box-sizing:border-box;font-size:16px;padding:10px 12px;border:1px solid #c9c9c6;border-radius:8px;letter-spacing:1px" placeholder="XXX-XXXX-XXXX"><button type="submit" style="margin-top:12px;width:100%;padding:11px;border:0;border-radius:8px;background:#B83A18;color:#fff;font-weight:700;font-size:15px">Entrar</button><div style="font-size:11.5px;color:#8a8a86;margin-top:10px">Peça o código ao consultor Aretia. Ele fica salvo neste aparelho.</div></form>';
+document.body.appendChild(o);o.querySelector('#codMsg').textContent=msg||'Digite o código do projeto para sincronizar com a base.';const i=o.querySelector('#codIn');setTimeout(()=>i.focus(),50);
+o.querySelector('form').addEventListener('submit',ev=>{ev.preventDefault();const v=(i.value||'').trim().toUpperCase();if(!v)return;o.remove();res(v);});});}
+let pedindo=null;async function codigo(msg){if(CODIGO)return CODIGO;if(!pedindo)pedindo=pedirCodigo(msg).then(v=>{CODIGO=v;try{localStorage.setItem(CODKEY,v);}catch(e){}pedindo=null;return v;});return pedindo;}
+function esquecerCodigo(){CODIGO=null;try{localStorage.removeItem(CODKEY);}catch(e){}}
+
 async function rpc(fn,args){const r=await fetch(SB.url+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'apikey':SB.key,'Authorization':'Bearer '+SB.key,'Content-Type':'application/json'},body:JSON.stringify(args||{})});if(!r.ok)throw new Error('http '+r.status);return r.json();}
 function chip(cls,t){const c=document.getElementById('syncChip');if(!c)return;c.textContent='base: '+t;c.style.background=cls==='ok'?'#1f7a3a':cls==='pend'?'#b86a00':'#b3261e';}
 let pendRows=[]; let pushing=false;
 function rowOf(r){const tot=Object.values(r.obsv||{}).reduce((t,o)=>t+Object.values(o).reduce((x,y)=>x+y,0),0);const va=S.cats&&S.cats[0]?Object.values(r.obsv||{}).reduce((t,o)=>t+(o[S.cats[0].id]||0),0):0;return {id:r.id,data:r.data,hora:r.hora,obs:r.obs||'',obsv:r.obsv,areas:S.areas,cats:S.cats,total:tot,va:va,excluida:!!r.excluida};}
 async function pushRows(rows){if(!rows||!rows.length)return;pendRows=pendRows.filter(p=>!rows.some(r=>r.id===p.id)).concat(rows);if(pushing)return;pushing=true;chip('pend','enviando…');
-  try{const r=await rpc('sn_push',{p_cliente:CLIENTE,p_codigo:CODIGO,p_rows:pendRows});if(r&&r.ok){pendRows=[];chip('ok','salvo '+new Date().toTimeString().slice(0,5));}else{chip('off',r&&r.erro==='codigo'?'código recusado':'erro');}}
+  try{const r=await rpc('sn_push',{p_cliente:CLIENTE,p_codigo:await codigo(),p_rows:pendRows});if(r&&r.ok){pendRows=[];chip('ok','salvo '+new Date().toTimeString().slice(0,5));}else{chip('off',r&&r.erro==='codigo'?(esquecerCodigo(),'código recusado'):(r&&r.erro==='bloqueado'?'muitas tentativas, aguarde 15 min':'erro'));}}
   catch(e){chip('off','sem conexão, tentando…');setTimeout(()=>{pushing=false;pushRows([]);},8000);return;}
   pushing=false;if(pendRows.length){const p=pendRows;pendRows=[];pushRows(p);}}
-async function pullRows(){try{chip('pend','carregando…');const r=await rpc('sn_pull',{p_cliente:CLIENTE,p_codigo:CODIGO});if(!(r&&r.ok)){chip('off','erro ao carregar');return;}
+async function pullRows(){try{chip('pend','carregando…');const r=await rpc('sn_pull',{p_cliente:CLIENTE,p_codigo:await codigo()});if(!(r&&r.ok)){if(r&&r.erro==='codigo'){esquecerCodigo();chip('off','código recusado');await codigo('Código recusado. Confira e digite de novo.');return pullRows();}chip('off',r&&r.erro==='bloqueado'?'muitas tentativas, aguarde 15 min':'erro ao carregar');return;}
   const rows=r.rows||[];if(rows.length){if(S.exemplo){S.rounds=[];S.exemplo=false;}
     const byId={};S.rounds.forEach(x=>byId[x.id]=x);
     const norm=t=>String(t||'').trim().toLowerCase();
